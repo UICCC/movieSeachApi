@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar"
+import { useState, useEffect } from "react"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,6 +17,31 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 export default function Page() {
+const [movies, setMovies] = useState([])
+const [loading, setLoading] = useState(true)
+const [error, setError] = useState(null)
+
+
+const fetchMovie = async () => {
+  setLoading(true)
+  try{
+    const response  = await fetch('http://localhost:5000/')
+    
+    if(!response.ok){
+      console.log(`HTTP Error ${response.status}`)
+    }
+    const data = await response.json()
+    setMovies(data)
+    setLoading(false)
+
+
+
+  } catch (error){
+    console.log(error)
+    setLoading(false)
+
+}};
+
   return (
     <SidebarProvider>
       <AppSidebar />

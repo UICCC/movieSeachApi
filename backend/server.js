@@ -1,26 +1,24 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import axios from 'axios';
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Test route
-app.get('/', (req, res) => {
-  res.json({ message: 'Backend is running!' });
+app.get('/', async (req, res) => {
+  try {
+    const response = await axios.get('https://imdb236.p.rapidapi.com/api/imdb/cast/nm0000190/titles', {
+      headers: {
+        'x-rapidapi-key': 'e016999978msh57f6410d1a9bd68p1876d8jsn1cf6accb5cb2',
+        'x-rapidapi-host': 'imdb236.p.rapidapi.com'
+      }
+    });
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-// Auth routes
-app.post('/api/login', (req, res) => {
-  const { email, password } = req.body;
-  // Add your login logic here
-  res.json({ message: 'Login endpoint', email });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+app.listen(5000, () => console.log('Server running on http://localhost:5000'));

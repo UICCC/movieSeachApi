@@ -4,11 +4,18 @@ const mongoose = require("mongoose");
 const accountSchema = new mongoose.Schema({
 
     Name: { type: String, required: true },
-    Email: { type: String, required: true, unique: true }
+    Email: { type: String, required: true, unique: true, lowercase: true,  // Convert to lowercase
+    trim: true,       // Remove whitespace
+    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address'] },
+    Password: {
+    type: String,
+    required: true
+  }
+    
 });
 
 // 2️⃣ Create the model from the schema
-const Account = mongoose.model("Account", accountSchema);
+const User = mongoose.model("Account", accountSchema);
 
 // 3️⃣ Export the model
-module.exports = Account;
+module.exports = User;

@@ -3,10 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const axios = require('axios');
-require('dotenv').config(); // Load .env variables
-
-// Models
-const User = require('./modules/Accounts/models/user-models'); // Make sure path is correct
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,30 +18,10 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.log('MongoDB connection error:', err && err.message ? err.message : err));
 
-// -------- User Routes --------
-app.post('/api/users/signup', (req, res) => {
-  const data = req.body;
-
-  if (!data || !data.name || !data.Email) {
-    return res.status(400).send("Missing name or email");
-  }
-
-  const newUser = new User({ Name: data.name, Email: data.Email });
-  
-  newUser.save()
-    .then(() => res.send("User created successfully"))
-    .catch(err => res.status(500).send(err));
-});
-
-app.get('/api/users', async (req, res) => {
-  try {
-    const users = await User.find();
-    res.json(users);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch users" });
-  }
-});
+// -------- Import and Mount User Routes --------
+// This replaces the inline userRouter code that was here
+const userRouter = require('./modules/Accounts/routes/user-routes'); // Adjust this path to match your router file location
+app.use('/api/users', userRouter);
 
 // -------- IMDb API Route --------
 app.get('/', async (req, res) => {

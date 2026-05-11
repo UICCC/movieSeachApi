@@ -12,16 +12,28 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Log all requests
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.path}`);
+  next();
+});
+
 // Connect to MongoDB
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/yourDatabaseName';
-mongoose.connect(MONGO_URI)
+const MONGO_URI = process.env.DB_URL || 'mongodb://127.0.0.1:27017/yourDatabaseName';
+const DB_NAME = process.env.DB_NAME || 'movieSearchDB';
+
+mongoose.connect(MONGO_URI, { dbName: DB_NAME })
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.log('MongoDB connection error:', err && err.message ? err.message : err));
 
 // -------- Import and Mount User Routes --------
-// This replaces the inline userRouter code that was here
-const userRouter = require('./modules/Accounts/routes/user-routes'); // Adjust this path to match your router file location
+const userRouter = require('./modules/Accounts/routes/user-routes');
 app.use('/api/users', userRouter);
+
+// -------- Test endpoint --------
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Server is working' });
+});
 
 // -------- IMDb API Route --------
 app.get('/', async (req, res) => {
@@ -41,6 +53,20 @@ app.get('/', async (req, res) => {
     console.error('Error fetching IMDB data:', error.message);
     res.status(500).json({ error: error.message });
   }
+});
+
+// Global error handler (must be after all routes)
+app.use((err, req, res, next) => {
+  console.error('❌ Global Error:', err);
+  res.status(err.status || 500).json({ 
+    error: err.message || 'Internal Server Error',
+    details: process.env.NODE_ENV === 'development' ? err.stack : undefined 
+  });
+});
+
+// 404 handler (must be last)
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found', path: req.path });
 });
 
 // Start server

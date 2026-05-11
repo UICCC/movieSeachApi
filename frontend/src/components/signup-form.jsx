@@ -28,7 +28,7 @@ export function SignupForm({ className, ...props }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    fetch("http://localhost:5000/api/users/signup", {
+    fetch("/api/users/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),

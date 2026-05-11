@@ -28,7 +28,7 @@ export function LoginForm({ className, ...props }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    fetch("http://localhost:5000/api/users/login", {
+    fetch("/api/users/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

@@ -38,26 +38,28 @@ console.log("Hashed password:", hashedPassword);
 
 // LOGIN
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body || {};
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
-  }
-
   try {
-    const user = await User.findOne({ Email: email });
+    process.stdout.write("🔑 Login route called\n");
+    const { email, password } = req.body || {};
 
-    if (!user) return res.status(404).json({ error: "User not found" });
-    const isMatch = await bcrypt.compare(password, user.Password)
-    if(!isMatch) { 
-      return res.status(401).json({ error:" password is wrong"})
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
     }
 
+    const user = await User.findOne({ Email: email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    const isMatch = await bcrypt.compare(password, user.Password);
+    if(!isMatch) { 
+      return res.status(401).json({ error: "Password is wrong"});
+    }
 
-    res.json({ message: "Login successful", user: { name: user.Name, email: user.Email } });
+    return res.json({ message: "Login successful", user: { name: user.Name, email: user.Email } });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Login failed" });
+    process.stdout.write(`❌ Login catch block: ${err.message}\n`);
+    return res.status(500).json({ error: "Login failed", details: err.message, stack: err.stack });
   }
 });
 

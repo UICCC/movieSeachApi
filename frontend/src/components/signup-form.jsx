@@ -35,14 +35,19 @@ export function SignupForm({ className, ...props }) {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Success:", data);
-        setName("");
-        setEmail("");
-        setPassword("");
-        SetStatusMessage("Account created successfully!")
+        if (data.error) {
+          SetStatusMessage(data.error);
+        } else {
+          console.log("Success:", data);
+          setName("");
+          setEmail("");
+          setPassword("");
+          SetStatusMessage("Account created successfully!");
+        }
       })
       .catch((err) => {
         console.error("Error:", err);
+        SetStatusMessage("Network error. Please try again.");
       });
   };
 
@@ -108,7 +113,15 @@ export function SignupForm({ className, ...props }) {
 
               <Field>
                 <Button type="submit">Create Account</Button>
-                <div className="bg-red-500">{statusMessage}</div>
+                {statusMessage && (
+                  <div className={`mt-2 p-2 rounded text-sm ${
+                    statusMessage.includes("successfully") 
+                      ? "bg-green-100 text-green-800 border border-green-300" 
+                      : "bg-red-100 text-red-800 border border-red-300"
+                  }`}>
+                    {statusMessage}
+                  </div>
+                )}
               </Field>
 
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">

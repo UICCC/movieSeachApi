@@ -91,7 +91,15 @@ export function LoginForm({ className, ...props }) {
               </Field>
               <Field>
                 <Button type="submit">Login</Button>
-                <div className="bg-red-300">{statusMessage}</div>
+                {statusMessage && (
+                  <div className={`mt-2 p-2 rounded text-sm ${
+                    statusMessage.includes("Success") 
+                      ? "bg-green-100 text-green-800 border border-green-300" 
+                      : "bg-red-100 text-red-800 border border-red-300"
+                  }`}>
+                    {statusMessage}
+                  </div>
+                )}
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
